@@ -1,0 +1,21 @@
+name: Build APK
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04   # پایتون ۳.۱۰ دارد، بدون مشکل
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Buildozer
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip git zip unzip openjdk-17-jdk
+          pip3 install buildozer
+      - name: Build APK
+        run: buildozer android debug
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: app
+          path: bin/*.apk

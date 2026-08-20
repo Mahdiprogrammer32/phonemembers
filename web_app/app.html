@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fa" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#11111b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>VCM</title>
+<style>
+:root {
+  --bg:#11111b;--surface:#1e1e2e;--surface2:#313244;--border:#45475a;
+  --text:#cdd6f4;--subtext:#a6adc8;--muted:#6c7086;
+  --blue:#89b4fa;--green:#a6e3a1;--red:#f38ba8;--yellow:#eab308;
+  --radius:12px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100dvh;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+input,button,select,textarea{font-family:inherit;font-size:inherit}
+
+#appBar{display:flex;align-items:center;gap:10px;background:var(--surface);padding:12px 16px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+#appBar .icon{font-size:24px}
+#appBar h1{font-size:16px;font-weight:700;flex:1}
+#btnMenu{background:none;border:none;color:var(--text);font-size:22px;padding:4px 8px;cursor:pointer}
+
+#dropdownMenu{position:fixed;top:52px;right:12px;z-index:200;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+#dropdownMenu button{display:block;width:100%;text-align:left;background:none;border:none;color:var(--text);padding:12px 20px;cursor:pointer;font-size:14px}
+#dropdownMenu button:hover{background:var(--border)}
+
+#tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:48px;z-index:99}
+.tab{flex:1;padding:12px 8px;background:none;border:none;color:var(--muted);font-weight:600;font-size:13px;cursor:pointer;transition:.2s;border-bottom:3px solid transparent}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.tab:active{background:var(--surface2)}
+
+.tab-content{display:none;padding:12px;padding-bottom:80px}
+.tab-content.active{display:block}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.card h2{font-size:16px;margin-bottom:12px;color:var(--text);display:flex;align-items:center;gap:8px}
+.badge{background:var(--blue);color:var(--bg);font-size:11px;padding:2px 8px;border-radius:10px;font-weight:700}
+
+.form-group{margin-bottom:12px}
+.form-group label{display:block;font-size:12px;color:var(--subtext);margin-bottom:4px;font-weight:600}
+.form-group input{width:100%;padding:10px 12px;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:8px;outline:none;transition:.2s}
+.form-group input:focus{border-color:var(--blue)}
+
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
+.btn{flex:1;min-width:100px;padding:10px 16px;border:none;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:4px}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.4;pointer-events:none}
+.btn.primary{background:var(--blue);color:var(--bg)}
+.btn.success{background:var(--green);color:var(--bg)}
+.btn.danger{background:var(--red);color:var(--bg)}
+.btn.outline{background:none;border:1px solid var(--border);color:var(--subtext)}
+.btn.small{min-width:auto;padding:6px 12px;font-size:12px;flex:0}
+.actions{margin-bottom:12px}
+
+.scroll-list{max-height:250px;overflow-y:auto}
+.scroll-list::-webkit-scrollbar{width:4px}
+.scroll-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.list-item{padding:10px 12px;border-bottom:1px solid var(--border);font-size:13px;display:flex;align-items:center;gap:8px;transition:.15s}
+.list-item:last-child{border-bottom:none}
+.list-item:active{background:var(--surface2)}
+.list-item .idx{color:var(--muted);font-size:11px;min-width:28px}
+.list-item .phone{font-family:monospace;flex:1}
+.list-item .meta{font-size:11px;color:var(--muted)}
+
+.contact-item{cursor:pointer;user-select:none}
+.contact-item.selected{background:rgba(137,180,250,.15)}
+.contact-item input[type=checkbox]{accent-color:var(--blue);width:18px;height:18px}
+.contact-scroll{max-height:400px}
+
+.stats-bar{display:flex;gap:16px;padding:8px 0;margin-bottom:8px;font-size:12px;color:var(--subtext)}
+
+.progress-container{margin-bottom:12px;text-align:center}
+.progress-bar{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;width:0%;background:var(--blue);border-radius:4px;transition:width .3s}
+#progressLabel{font-size:12px;color:var(--subtext);margin-top:4px;display:block}
+
+.log-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.log-scroll{max-height:500px;font-family:'Cascadia Code','Consolas',monospace;font-size:12px}
+.log-item{padding:4px 8px;border-bottom:1px solid rgba(69,71,90,.3);word-break:break-all}
+.log-item.INFO{color:var(--blue)}
+.log-item.SUCCESS{color:var(--green)}
+.log-item.WARNING{color:var(--yellow)}
+.log-item.ERROR{color:var(--red)}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--surface2);color:var(--text);padding:12px 20px;border-radius:8px;font-size:13px;z-index:999;box-shadow:0 4px 16px rgba(0,0,0,.5);transition:.3s;max-width:90%;text-align:center}
+.toast.hidden{opacity:0;pointer-events:none;bottom:-60px}
+
+.dialog-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:500;padding:20px}
+.dialog{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;max-width:360px;width:100%}
+.dialog h3{margin-bottom:8px}
+.dialog p{color:var(--subtext);font-size:13px;margin-bottom:16px;line-height:1.5}
+.dialog-actions{display:flex;gap:8px;justify-content:flex-end}
+.dialog-actions .btn{min-width:auto;flex:0;padding:8px 20px}
+
+.hidden{display:none !important}
+@supports(padding-top:env(safe-area-inset-top)){#appBar{padding-top:calc(12px + env(safe-area-inset-top))}body{padding-bottom:env(safe-area-inset-bottom)}}
+*{scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+</style>
+</head>
+<body>
+
+<header id="appBar">
+  <span class="icon">📱</span>
+  <h1>Virtual Contact Manager</h1>
+  <button id="btnMenu" onclick="toggleMenu()">⋮</button>
+</header>
+<div id="dropdownMenu" class="hidden">
+  <button onclick="exportTXT()">📄 Export TXT</button>
+  <button onclick="exportCSV()">📊 Export CSV</button>
+  <button onclick="clearAllData()">🗑 Clear All Data</button>
+</div>
+
+<nav id="tabs">
+  <button class="tab active" data-tab="generate" onclick="switchTab('generate')">🔧 Generate</button>
+  <button class="tab" data-tab="contacts" onclick="switchTab('contacts')">👥 Contacts</button>
+  <button class="tab" data-tab="log" onclick="switchTab('log')">📋 Log</button>
+</nav>
+
+<section id="tab-generate" class="tab-content active">
+  <div class="card">
+    <h2>🔧 Number Generation</h2>
+    <div class="form-group"><label>Start Number</label><input type="tel" id="startNumber" value="09121111111" placeholder="e.g. 09121111111"></div>
+    <div class="form-group"><label>Count</label><input type="number" id="count" value="1000" min="1" max="100000"></div>
+    <div class="form-group"><label>Name Prefix</label><input type="text" id="namePrefix" value="Channel Member"></div>
+    <div class="form-group"><label>Step</label><input type="number" id="step" value="1" min="1"></div>
+    <div class="btn-row">
+      <button class="btn primary" onclick="previewNumbers()">👁 Preview</button>
+      <button class="btn primary" onclick="generateContacts()">⚡ Generate</button>
+    </div>
+  </div>
+  <div class="card" id="previewCard" style="display:none">
+    <h2>Preview <span id="previewCount" class="badge">0</span></h2>
+    <div id="previewList" class="scroll-list"></div>
+  </div>
+  <div class="card">
+    <h2>📥 Import</h2>
+    <div class="btn-row">
+      <button class="btn outline" onclick="importFile('txt')">📄 Import TXT</button>
+      <button class="btn outline" onclick="importFile('csv')">📊 Import CSV</button>
+    </div>
+    <input type="file" id="fileInput" accept=".txt,.csv" style="display:none" onchange="handleFile(event)">
+  </div>
+</section>
+
+<section id="tab-contacts" class="tab-content">
+  <div class="stats-bar">
+    <span id="statsTotal">Total: 0</span>
+    <span id="statsCreated">Created: 0</span>
+  </div>
+  <div class="progress-container" id="progressContainer" style="display:none">
+    <div class="progress-bar"><div id="progressFill" class="progress-fill"></div></div>
+    <span id="progressLabel">0%</span>
+  </div>
+  <div class="btn-row actions">
+    <button class="btn success" onclick="addContactsFromPreview()">➕ Add</button>
+    <button class="btn danger" onclick="deleteCreated()">🗑 Delete Created</button>
+    <button class="btn danger" onclick="deleteSelected()">✂ Delete Selected</button>
+    <button class="btn outline" onclick="refreshContacts()">🔄 Refresh</button>
+  </div>
+  <div class="card">
+    <div id="contactList" class="scroll-list contact-scroll"></div>
+  </div>
+</section>
+
+<section id="tab-log" class="tab-content">
+  <div class="card">
+    <div class="log-header"><h2>📋 Log</h2><button class="btn small outline" onclick="clearLog()">Clear</button></div>
+    <div id="logList" class="scroll-list log-scroll"></div>
+  </div>
+</section>
+
+<div id="toast" class="toast hidden"></div>
+<div id="dialog" class="dialog-overlay hidden" onclick="closeDialog(event)">
+  <div class="dialog" onclick="event.stopPropagation()">
+    <h3 id="dialogTitle"></h3>
+    <p id="dialogBody"></p>
+    <div class="dialog-actions" id="dialogActions"></div>
+  </div>
+</div>
+
+<script>
+/* ═══ DATABASE (IndexedDB) ═══ */
+const DB_NAME='VCM_DB';let db=null;
+function openDB(){return new Promise((r,j)=>{const q=indexedDB.open(DB_NAME,1);q.onupgradeneeded=e=>{const d=e.target.result;if(!d.objectStoreNames.contains('contacts')){const s=d.createObjectStore('contacts',{keyPath:'internal_id'});s.createIndex('phone','phone');s.createIndex('created_by_app','created_by_app');s.createIndex('status','status')}};q.onsuccess=e=>{db=e.target.result;r(db)};q.onerror=e=>j(e.target.error)})}
+function dbP(s,d){return new Promise((r,j)=>{const t=db.transaction(s,'readwrite'),st=t.objectStore(s);Array.isArray(d)?d.forEach(x=>st.put(x)):st.put(d);t.oncomplete=()=>r();t.onerror=e=>j(e.target.error)})}
+function dbA(s){return new Promise((r,j)=>{const t=db.transaction(s,'readonly'),q=t.objectStore(s).getAll();q.onsuccess=()=>r(q.result);q.onerror=e=>j(e.target.error)})}
+function dbD(s,k){return new Promise((r,j)=>{const t=db.transaction(s,'readwrite');t.objectStore(s).delete(k);t.oncomplete=()=>r();t.onerror=e=>j(e.target.error)})}
+function dbC(s){return new Promise((r,j)=>{const t=db.transaction(s,'readwrite');t.objectStore(s).clear();t.oncomplete=()=>r();t.onerror=e=>j(e.target.error)})}
+
+/* ═══ PHONE UTILS ═══ */
+function normPhone(raw){if(!raw)return null;let d=raw.replace(/[^\d]/g,'');if(!d)return null;while(d.length>2&&d.startsWith('00'))d=d.slice(2);if(d.startsWith('0')&&d.length===11)d='98'+d.slice(1);else if(d.startsWith('98')&&d.length===12){}else if(d.length===10&&d.startsWith('9'))d='98'+d;else{if(d.length<7||d.length>15)return null}return'+'+d}
+function fmtPhone(p){if(p.startsWith('+98')&&p.length===13){const l=p.slice(3);return`+98 ${l.slice(0,3)} ${l.slice(3,6)} ${l.slice(6)}`}return p}
+function genNums(start,count,step){const n=normPhone(start);if(!n)throw new Error('Invalid start number');const b=BigInt(n.slice(1));const r=[];for(let i=0;i<count;i++){const num=b+BigInt(i*step);if(num.toString().length>15)break;r.push('+'+num.toString())}return r}
+function uid(){return crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16)})}
+
+/* ═══ LOG ═══ */
+const logs=[];
+function log(lvl,msg){const t=new Date().toTimeString().slice(0,8);logs.push({t,lvl,msg});if(logs.length>5000)logs.shift();const el=document.getElementById('logList'),d=document.createElement('div');d.className='log-item '+lvl;d.textContent=`[${t}] [${lvl}] ${msg}`;el.appendChild(d);el.scrollTop=el.scrollHeight}
+function clearLog(){logs.length=0;document.getElementById('logList').innerHTML='';log('INFO','Log cleared')}
+
+/* ═══ STATE ═══ */
+let genPhones=[],contacts=[],selIds=new Set(),impMode=null;
+
+/* ═══ UI ═══ */
+function switchTab(n){document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===n));document.querySelectorAll('.tab-content').forEach(c=>c.classList.toggle('active',c.id==='tab-'+n));if(n==='contacts')refreshContacts();if(n==='log')document.getElementById('logList').scrollTop=9e9}
+function toggleMenu(){document.getElementById('dropdownMenu').classList.toggle('hidden')}
+function showToast(m,d=2500){const t=document.getElementById('toast');t.textContent=m;t.classList.remove('hidden');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.add('hidden'),d)}
+function showDialog(title,body,buttons){document.getElementById('dialogTitle').textContent=title;document.getElementById('dialogBody').textContent=body;const a=document.getElementById('dialogActions');a.innerHTML='';buttons.forEach(b=>{const btn=document.createElement('button');btn.className='btn '+(b.cls||'outline');btn.textContent=b.text;btn.onclick=()=>{document.getElementById('dialog').classList.add('hidden');if(b.fn)b.fn()};a.appendChild(btn)});document.getElementById('dialog').classList.remove('hidden')}
+function closeDialog(e){if(e.target.classList.contains('dialog-overlay'))document.getElementById('dialog').classList.add('hidden')}
+function showProg(show,pct=0,lbl=''){document.getElementById('progressContainer').style.display=show?'':'none';document.getElementById('progressFill').style.width=pct+'%';document.getElementById('progressLabel').textContent=lbl||pct+'%'}
+function setBtns(en){document.querySelectorAll('.btn-row .btn').forEach(b=>{if(!b.classList.contains('small'))b.disabled=!en})}
+
+/* ═══ PREVIEW ═══ */
+function previewNumbers(){const s=document.getElementById('startNumber').value.trim(),c=parseInt(document.getElementById('count').value)||0,st=parseInt(document.getElementById('step').value)||1;if(!normPhone(s)){showToast('❌ Invalid start number');return}if(c<=0||c>100000){showToast('❌ Count: 1–100000');return}if(st<=0){showToast('❌ Step must be > 0');return}try{genPhones=genNums(s,c,st)}catch(e){showToast('❌ '+e.message);return}document.getElementById('previewCard').style.display='';document.getElementById('previewCount').textContent=genPhones.length;const el=document.getElementById('previewList');el.innerHTML='';genPhones.slice(0,100).forEach((p,i)=>{const d=document.createElement('div');d.className='list-item';d.innerHTML=`<span class="idx">${i+1}</span><span class="phone">${fmtPhone(p)}</span>`;el.appendChild(d)});if(genPhones.length>100){const d=document.createElement('div');d.className='list-item';d.innerHTML=`<span class="meta">… and ${genPhones.length-100} more</span>`;el.appendChild(d)}log('INFO',`Preview: ${genPhones.length} numbers`);showToast(`✅ ${genPhones.length} numbers ready`)}
+
+/* ═══ GENERATE ═══ */
+async function generateContacts(){if(!genPhones.length){previewNumbers();if(!genPhones.length)return}const prefix=document.getElementById('namePrefix').value.trim()||'Channel Member';const phones=[...genPhones],total=phones.length;let ok=0,sk=0;setBtns(false);showProg(true,0,`0/${total}`);log('INFO',`Creating ${total} contacts…`);const ex=new Set(contacts.map(c=>c.phone));const B=50;for(let i=0;i<total;i++){const ph=phones[i];if(ex.has(ph)){sk++}else{const c={internal_id:uid(),phone:ph,generated_name:`${prefix} ${String(ok+1).padStart(3,'0')}`,created_at:new Date().toISOString(),source:'generated',status:'active',created_by_app:true};await dbP('contacts',c);ex.add(ph);ok++}if((i+1)%B===0||i===total-1){showProg(true,Math.round((i+1)/total*100),`${i+1}/${total} ✅${ok} ⏭${sk}`);await new Promise(r=>setTimeout(r,0))}}log('SUCCESS',`Created ${ok}, skipped ${sk}`);showProg(false);setBtns(true);showToast(`✅ ${ok} created, ${sk} skipped`);await refreshContacts()}
+async function addContactsFromPreview(){await generateContacts()}
+
+/* ═══ DELETE ═══ */
+async function deleteCreated(){const cr=contacts.filter(c=>c.created_by_app);if(!cr.length){showToast('No app-created contacts');return}showDialog('⚠️ Confirm',`Delete ALL ${cr.length} contacts created by this app? Your original contacts will NOT be affected.`,[{text:'Cancel'},{text:'Delete All',cls:'danger',fn:async()=>{setBtns(false);showProg(true,0,'Deleting…');log('WARNING',`Deleting ${cr.length} contacts…`);for(let i=0;i<cr.length;i++){await dbD('contacts',cr[i].internal_id);if((i+1)%50===0||i===cr.length-1){showProg(true,Math.round((i+1)/cr.length*100),`${i+1}/${cr.length}`);await new Promise(r=>setTimeout(r,0))}}log('SUCCESS',`Deleted ${cr.length}`);showProg(false);setBtns(true);showToast(`🗑 Deleted ${cr.length}`);await refreshContacts()}}])}
+async function deleteSelected(){if(!selIds.size){showToast('No contacts selected');return}showDialog('⚠️ Delete',`Delete ${selIds.size} selected? Only app-created contacts will be removed.`,[{text:'Cancel'},{text:'Delete',cls:'danger',fn:async()=>{let del=0;for(const id of selIds){const c=contacts.find(x=>x.internal_id===id);if(c&&c.created_by_app){await dbD('contacts',id);del++}}selIds.clear();log('SUCCESS',`Deleted ${del}`);showToast(`🗑 Deleted ${del}`);await refreshContacts()}}])}
+
+/* ═══ IMPORT ═══ */
+function importFile(t){impMode=t;const i=document.getElementById('fileInput');i.accept=t==='csv'?'.csv':'.txt';i.value='';i.click()}
+function handleFile(ev){const f=ev.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=async e=>{const txt=e.target.result;let ph=[];if(impMode==='csv'){txt.split('\n').map(r=>r.split(',')).forEach(row=>row.forEach(c=>{const n=normPhone(c.trim().replace(/"/g,''));if(n)ph.push(n)}))}else{ph=txt.split('\n').map(l=>l.trim()).filter(l=>l&&!l.startsWith('#')).map(normPhone).filter(Boolean)}if(!ph.length){showToast('No valid numbers');return}genPhones=ph;log('SUCCESS',`Imported ${ph.length} from ${f.name}`);showToast(`📥 ${ph.length} imported`);document.getElementById('previewCard').style.display='';document.getElementById('previewCount').textContent=ph.length;const el=document.getElementById('previewList');el.innerHTML='';ph.slice(0,100).forEach((p,i)=>{const d=document.createElement('div');d.className='list-item';d.innerHTML=`<span class="idx">${i+1}</span><span class="phone">${fmtPhone(p)}</span>`;el.appendChild(d)});switchTab('generate')};rd.readAsText(f)}
+
+/* ═══ EXPORT ═══ */
+async function exportTXT(){document.getElementById('dropdownMenu').classList.add('hidden');const ph=contacts.filter(c=>c.status==='active').map(c=>c.phone);if(!ph.length){showToast('No contacts');return}dl(ph.join('\n')+'\n',`contacts_${ts()}.txt`,'text/plain');log('SUCCESS',`Exported ${ph.length} as TXT`);showToast(`📤 ${ph.length} exported`)}
+async function exportCSV(){document.getElementById('dropdownMenu').classList.add('hidden');const ac=contacts.filter(c=>c.status==='active');if(!ac.length){showToast('No contacts');return}let csv='phone,name,source,status,created_at\n';ac.forEach(c=>csv+=`"${c.phone}","${c.generated_name}","${c.source}","${c.status}","${c.created_at}"\n`);dl(csv,`contacts_${ts()}.csv`,'text/csv');log('SUCCESS',`Exported ${ac.length} as CSV`);showToast(`📤 ${ac.length} exported`)}
+function dl(c,f,t){const b=new Blob([c],{type:t}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=f;a.click();URL.revokeObjectURL(u)}
+function ts(){return new Date().toISOString().slice(0,19).replace(/[T:]/g,'-')}
+
+/* ═══ REFRESH ═══ */
+async function refreshContacts(){contacts=await dbA('contacts');const ac=contacts.filter(c=>c.status==='active'),cr=ac.filter(c=>c.created_by_app);document.getElementById('statsTotal').textContent=`Total: ${ac.length}`;document.getElementById('statsCreated').textContent=`Created: ${cr.length}`;const el=document.getElementById('contactList');el.innerHTML='';if(!ac.length){el.innerHTML='<div class="list-item"><span class="meta">No contacts yet</span></div>';return}ac.forEach(c=>{const d=document.createElement('div');d.className='list-item contact-item'+(selIds.has(c.internal_id)?' selected':'');d.onclick=()=>toggleSel(c.internal_id,d);d.innerHTML=`<input type="checkbox" ${selIds.has(c.internal_id)?'checked':''} onclick="event.stopPropagation();toggleSel('${c.internal_id}',this.closest('.contact-item'))"><span class="phone">${fmtPhone(c.phone)}</span><span class="meta">${c.generated_name||c.source}</span>`;el.appendChild(d)})}
+function toggleSel(id,el){if(selIds.has(id)){selIds.delete(id);el.classList.remove('selected')}else{selIds.add(id);el.classList.add('selected')}const cb=el.querySelector('input[type=checkbox]');if(cb)cb.checked=selIds.has(id)}
+async function clearAllData(){document.getElementById('dropdownMenu').classList.add('hidden');showDialog('⚠️ Clear All','This will delete ALL data. Are you sure?',[{text:'Cancel'},{text:'Clear',cls:'danger',fn:async()=>{await dbC('contacts');selIds.clear();log('WARNING','All data cleared');showToast('🗑 Cleared');await refreshContacts()}}])}
+
+/* ═══ INIT ═══ */
+async function init(){await openDB();log('INFO','Application started');await refreshContacts()}
+init().catch(e=>{console.error(e);showToast('❌ Init failed')});
+</script>
+</body>
+</html>
